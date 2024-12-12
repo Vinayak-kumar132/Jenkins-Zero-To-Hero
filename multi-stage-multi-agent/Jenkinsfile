@@ -1,21 +1,45 @@
 pipeline {
-  agent none
-  stages {
-    stage('Back-end') {
-      agent {
-        docker { image 'maven:3.8.1-adoptopenjdk-11' }
-      }
-      steps {
-        sh 'mvn --version'
-      }
+    agent none
+    stages {
+        stage('Back-end') {
+            agent {
+                docker { 
+                    image 'maven:3.8.1-adoptopenjdk-11' 
+                }
+            }
+            steps {
+                echo 'Setting up Back-end environment...'
+                sh 'mvn --version'
+                // Add further Maven commands or tests here
+            }
+        }
+        stage('Front-end') {
+            agent {
+                docker { 
+                    image 'node:16-alpine' 
+                }
+            }
+            steps {
+                echo 'Setting up Front-end environment...'
+                sh 'node --version'
+                // Add front-end build or test commands here
+            }
+        }
+        stage('Database') {
+            agent {
+                docker { 
+                    image 'mysql:latest' 
+                }
+            }
+            steps {
+                echo 'Setting up Database environment...'
+                sh '''
+                echo "Connecting to MySQL..."
+                mysql -u root -e "SHOW DATABASES;"
+                '''
+                // Add database-related commands or migrations here
+            }
+        }
     }
-    stage('Front-end') {
-      agent {
-        docker { image 'node:16-alpine' }
-      }
-      steps {
-        sh 'node --version'
-      }
-    }
-  }
 }
+
